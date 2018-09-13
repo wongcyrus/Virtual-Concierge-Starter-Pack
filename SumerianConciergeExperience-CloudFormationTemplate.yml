@@ -136,6 +136,10 @@ Resources:
             PredefinedMetricType: DynamoDBWriteCapacityUtilization
       
 Outputs:
+  S3Bucket:
+    Value: !Ref S3Bucket
+    Description: Name of S3 bucket Name
+    
   FrontalfaceSecureURL:
     Value: !Join 
       - ''
