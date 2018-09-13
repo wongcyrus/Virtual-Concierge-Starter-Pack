@@ -136,21 +136,6 @@ Resources:
             PredefinedMetricType: DynamoDBWriteCapacityUtilization
       
 Outputs:
-  WebsiteURL:
-    Value: !GetAtt 
-      - S3Bucket
-      - WebsiteURL
-    Description: URL for website hosted on S3
-
-  S3BucketSecureURL:
-    Value: !Join 
-      - ''
-      - - 'https://'
-        - !GetAtt 
-          - S3Bucket
-          - DomainName
-    Description: Name of S3 bucket to hold website content
-    
   FrontalfaceSecureURL:
     Value: !Join 
       - ''
@@ -170,10 +155,17 @@ Outputs:
           - DomainName
         - '/jsfeat-min.js'
     Description: jsfeat-min.js url
+
+  MicIconSecureURL:
+    Value: !Join 
+      - ''
+      - - 'https://'
+        - !GetAtt 
+          - S3Bucket
+          - DomainName
+        - '/mic.png'
+    Description: mic.png url
     
-  S3Bucket:
-    Value: !Ref S3Bucket
-    Description: Name of S3 bucket Name
   CognitoIdentityPoolID:
     Value: !Ref CognitoIdentityPool
     Description: The Cognito Identity Pool ID. Place this in the AWS settings of your Amazon Sumerian Scene
