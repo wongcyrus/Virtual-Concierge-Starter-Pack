@@ -12,7 +12,7 @@ Create a Cloud 9 environment and open terminal.
 git clone https://github.com/wongcyrus/Virtual-Concierge-Starter-Pack.git
 
 
-cd Virtual-Concierge-Starter-Pack.git
+cd Virtual-Concierge-Starter-Pack
 
 
 chmod +x deployment.sh
