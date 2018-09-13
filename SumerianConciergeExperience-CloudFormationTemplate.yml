@@ -1,0 +1,179 @@
+---
+AWSTemplateFormatVersion : 2010-09-09
+Description: Creates a Cognito Pool for the Amazon Sumerian Concierge Experience.
+Resources:
+    CognitoIdentityPool:
+        Type: AWS::Cognito::IdentityPool
+        Properties:
+          IdentityPoolName:
+            Fn::Sub: "SumerianTutorialCognitoIdentityPool${AWS::StackName}"
+          AllowUnauthenticatedIdentities: True
+    CognitoIdentityExampleRole:
+        Type: AWS::IAM::Role
+        Properties:
+          AssumeRolePolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Action: sts:AssumeRoleWithWebIdentity
+              Effect: Allow
+              Principal:
+                Federated: 'cognito-identity.amazonaws.com'
+              Condition:
+                StringEquals:
+                  cognito-identity.amazonaws.com:aud:
+                    Ref: CognitoIdentityPool
+          ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/AmazonPollyReadOnlyAccess
+          - arn:aws:iam::aws:policy/AmazonLexRunBotsOnly
+          - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
+          - arn:aws:iam::aws:policy/AmazonS3FullAccess
+          - arn:aws:iam::aws:policy/AmazonRekognitionReadOnlyAccess
+    CognitoRoleAttachment:
+      Type: "AWS::Cognito::IdentityPoolRoleAttachment"
+      Properties:
+        IdentityPoolId:
+          Ref: CognitoIdentityPool
+        Roles:
+          unauthenticated:
+            Fn::GetAtt: [CognitoIdentityExampleRole, Arn]
+            
+    S3Bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        AccessControl: PublicRead
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+      DeletionPolicy: Retain
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: MyPolicy
+          Version: 2012-10-17
+          Statement:
+            - Sid: PublicReadForGetBucketObjects
+              Effect: Allow
+              Principal: '*'
+              Action: 's3:GetObject'
+              Resource: !Join 
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref S3Bucket
+                  - /*
+        Bucket: !Ref S3Bucket
+        
+    DDBTable: 
+      Type: AWS::DynamoDB::Table
+      Properties: 
+        TableName: "SumerianConciergeExperienceUsers"
+        AttributeDefinitions: 
+          - 
+            AttributeName: "id"
+            AttributeType: "S"
+        KeySchema: 
+          - 
+            AttributeName: "id"
+            KeyType: "HASH"
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+  
+    WriteCapacityScalableTarget:
+      Type: AWS::ApplicationAutoScaling::ScalableTarget
+      Properties:
+        MaxCapacity: 15
+        MinCapacity: 5
+        ResourceId: !Join
+          - /
+          - - table
+            - !Ref DDBTable
+        RoleARN: !GetAtt ScalingRole.Arn
+        ScalableDimension: dynamodb:table:WriteCapacityUnits
+        ServiceNamespace: dynamodb
+    ScalingRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            -
+              Effect: "Allow"
+              Principal:
+                Service:
+                  - application-autoscaling.amazonaws.com
+              Action:
+                - "sts:AssumeRole"
+        Path: "/"
+        Policies:
+          -
+            PolicyName: "root"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                -
+                  Effect: "Allow"
+                  Action:
+                    - "dynamodb:DescribeTable"
+                    - "dynamodb:UpdateTable"
+                    - "cloudwatch:PutMetricAlarm"
+                    - "cloudwatch:DescribeAlarms"
+                    - "cloudwatch:GetMetricStatistics"
+                    - "cloudwatch:SetAlarmState"
+                    - "cloudwatch:DeleteAlarms"
+                  Resource: "*"
+    WriteScalingPolicy:
+      Type: AWS::ApplicationAutoScaling::ScalingPolicy
+      Properties:
+        PolicyName: WriteAutoScalingPolicy
+        PolicyType: TargetTrackingScaling
+        ScalingTargetId: !Ref WriteCapacityScalableTarget
+        TargetTrackingScalingPolicyConfiguration:
+          TargetValue: 50.0
+          ScaleInCooldown: 60
+          ScaleOutCooldown: 60
+          PredefinedMetricSpecification:
+            PredefinedMetricType: DynamoDBWriteCapacityUtilization
+      
+Outputs:
+  WebsiteURL:
+    Value: !GetAtt 
+      - S3Bucket
+      - WebsiteURL
+    Description: URL for website hosted on S3
+
+  S3BucketSecureURL:
+    Value: !Join 
+      - ''
+      - - 'https://'
+        - !GetAtt 
+          - S3Bucket
+          - DomainName
+    Description: Name of S3 bucket to hold website content
+    
+  FrontalfaceSecureURL:
+    Value: !Join 
+      - ''
+      - - 'https://'
+        - !GetAtt 
+          - S3Bucket
+          - DomainName
+        - '/frontalface.js'
+    Description: frontalface.js url
+
+  JsfeatSecureURL:
+    Value: !Join 
+      - ''
+      - - 'https://'
+        - !GetAtt 
+          - S3Bucket
+          - DomainName
+        - '/jsfeat-min.js'
+    Description: jsfeat-min.js url
+    
+  S3Bucket:
+    Value: !Ref S3Bucket
+    Description: Name of S3 bucket Name
+  CognitoIdentityPoolID:
+    Value: !Ref CognitoIdentityPool
+    Description: The Cognito Identity Pool ID. Place this in the AWS settings of your Amazon Sumerian Scene
