@@ -26,7 +26,6 @@ Resources:
           - arn:aws:iam::aws:policy/AmazonPollyReadOnlyAccess
           - arn:aws:iam::aws:policy/AmazonLexRunBotsOnly
           - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
-          - arn:aws:iam::aws:policy/AmazonS3FullAccess
           - arn:aws:iam::aws:policy/AmazonRekognitionReadOnlyAccess
     CognitoRoleAttachment:
       Type: "AWS::Cognito::IdentityPoolRoleAttachment"
