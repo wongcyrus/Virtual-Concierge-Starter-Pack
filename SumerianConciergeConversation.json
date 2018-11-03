@@ -2,6 +2,10 @@
     "intents": [
         {
             "intentVersion": "1", 
+            "intentName": "LabMarkIntent"
+        }, 
+        {
+            "intentVersion": "1", 
             "intentName": "CloseInfo"
         }, 
         {
@@ -11,14 +15,6 @@
         {
             "intentVersion": "1", 
             "intentName": "Greeting"
-        }, 
-        {
-            "intentVersion": "1", 
-            "intentName": "CloseFloorplan"
-        }, 
-        {
-            "intentVersion": "1", 
-            "intentName": "Floorplan"
         }, 
         {
             "intentVersion": "1", 

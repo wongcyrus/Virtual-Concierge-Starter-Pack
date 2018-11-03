@@ -1,0 +1,234 @@
+{
+  "metadata": {
+    "schemaVersion": "1.0",
+    "importType": "LEX",
+    "importFormat": "JSON"
+  },
+  "resource": {
+    "name": "labmonitorassistant",
+    "version": "4",
+    "intents": [
+      {
+        "name": "LabMarkIntent",
+        "version": "4",
+        "fulfillmentActivity": {
+          "type": "ReturnIntent"
+        },
+        "sampleUtterances": [
+            "Tell me mark.",
+            "Show me mark.",
+            "I would like to check my mark.",
+            "I would like to check my exercise {lab} mark.",
+            "Show me exercise {lab} mark.",
+            "Tell me exercise {lab} mark."
+        ],
+        "slots": [
+          {
+            "name": "lab",
+            "slotConstraint": "Required",
+            "slotType": "AMAZON.NUMBER",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "What is the lab number?"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "sampleUtterances": []
+          }
+        ]
+      },
+      {
+        "name": "CloseInfo",
+        "version": "4",
+        "fulfillmentActivity": {
+          "type": "ReturnIntent"
+        },
+        "sampleUtterances": [
+          "Close {hint}",
+          "Hide {hint}"
+        ],
+        "slots": [
+          {
+            "name": "hint",
+            "slotConstraint": "Optional",
+            "slotType": "hint",
+            "slotTypeVersion": "2",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "e.g. What city?"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "sampleUtterances": []
+          }
+        ]
+      },
+      {
+        "name": "ThankYou",
+        "version": "1",
+        "fulfillmentActivity": {
+          "type": "ReturnIntent"
+        },
+        "sampleUtterances": [
+          "Thank you for your help.",
+          "Thank you.",
+          "Thanks."
+        ],
+        "slots": [],
+        "conclusionStatement": {
+          "messages": [
+            {
+              "contentType": "PlainText",
+              "content": "You're welcome!"
+            },
+            {
+              "contentType": "PlainText",
+              "content": "Of course!"
+            },
+            {
+              "contentType": "PlainText",
+              "content": "No problem."
+            },
+            {
+              "contentType": "PlainText",
+              "content": "Anytime."
+            }
+          ]
+        }
+      },
+      {
+        "name": "Greeting",
+        "version": "2",
+        "fulfillmentActivity": {
+          "type": "ReturnIntent"
+        },
+        "sampleUtterances": [
+          "Hi Cristine",
+          "Hello Cristine",
+          "Good morning Cristine",
+          "Good afternoon Cristine",
+          "Good evening Cristine",
+          "Hi"
+        ],
+        "slots": []
+      },
+      {
+        "name": "Info",
+        "version": "5",
+        "fulfillmentActivity": {
+          "type": "ReturnIntent"
+        },
+        "sampleUtterances": [
+          "Show me {information}",
+          "{information}",
+          "I have a question.",
+          "What can you do"
+        ],
+        "slots": [
+          {
+            "name": "information",
+            "slotConstraint": "Optional",
+            "slotType": "Info",
+            "slotTypeVersion": "3",
+            "valueElicitationPrompt": {
+              "messages": [
+                {
+                  "contentType": "PlainText",
+                  "content": "e.g. What city?"
+                }
+              ],
+              "maxAttempts": 2
+            },
+            "priority": 1,
+            "sampleUtterances": []
+          }
+        ]
+      }
+    ],
+    "slotTypes": [
+      {
+        "name": "hint",
+        "version": "2",
+        "enumerationValues": [
+          {
+            "value": "help"
+          },
+          {
+            "value": "hint"
+          },
+          {
+            "value": "info"
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      },
+      {
+        "name": "Object",
+        "version": "1",
+        "enumerationValues": [
+          {
+            "value": "floor plan",
+            "synonyms": []
+          },
+          {
+            "value": "map",
+            "synonyms": []
+          },
+          {
+            "value": "directory",
+            "synonyms": []
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      },
+      {
+        "name": "Info",
+        "version": "3",
+        "enumerationValues": [
+          {
+            "value": "help",
+            "synonyms": []
+          },
+          {
+            "value": "information",
+            "synonyms": []
+          },
+          {
+            "value": "info",
+            "synonyms": []
+          }
+        ],
+        "valueSelectionStrategy": "ORIGINAL_VALUE"
+      }
+    ],
+    "voiceId": "Joanna",
+    "childDirected": false,
+    "locale": "en-US",
+    "idleSessionTTLInSeconds": 300,
+    "clarificationPrompt": {
+      "messages": [
+        {
+          "contentType": "PlainText",
+          "content": "Sorry, can you please repeat that?"
+        }
+      ],
+      "maxAttempts": 5
+    },
+    "abortStatement": {
+      "messages": [
+        {
+          "contentType": "PlainText",
+          "content": "Sorry, I could not understand."
+        }
+      ]
+    }
+  }
+}
